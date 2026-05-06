@@ -1,15 +1,16 @@
 import warnings
+
 warnings.filterwarnings("ignore", message="resource_tracker: There appear to be.*")
 
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from pydantic import BaseModel
-from typing import List, Optional
 import os
+from typing import List, Optional
 
 from config import config
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 from rag_system import RAGSystem
 
 # Initialize FastAPI app
@@ -71,6 +72,7 @@ async def query_documents(request: QueryRequest):
             session_id=session_id
         )
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/courses", response_model=CourseStats)
@@ -98,10 +100,11 @@ async def startup_event():
             print(f"Error loading documents: {e}")
 
 # Custom static file handler with no-cache headers for development
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 import os
 from pathlib import Path
+
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 
 class DevStaticFiles(StaticFiles):
